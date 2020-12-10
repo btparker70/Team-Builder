@@ -50,9 +50,67 @@ function addEmployee() {
         // Questions
         .prompt([
             {
-                
+                type: 'list',
+                message: 'Which type of employee to add?',
+                choices: ['Engineer', 'Intern', 'No more employees to add'],
+                name: 'employeeType'
             }
         ])
+        .then((response) => {
+            if (response.employeeType === 'No more employees to add') {
+                render(employees);
+            } else {
+                addEmployeeInfo();
+            }
+        })
+}
+function addEmployeeInfo(employeeType) {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: `${employeeType} Name:`,
+                name: 'employeeName'
+            },
+            {
+                type: 'input',
+                message: `${employeeType} Id:`,
+                name: 'employeeId'
+            },
+            {
+                type: 'input',
+                message: `${employeeType} Email:`,
+                name: 'employeeEmail'
+            },
+            {
+                type: 'input',
+                message: 'Manager Office Number:',
+                name: 'managerOfficeNumber'
+            },
+            {
+                when: employeeType === 'Engineer',
+                type: 'input',
+                message: "Engineer's Github: ",
+                name: 'github'
+            },
+            {
+                when: employeeType === 'Intern',
+                type: 'input',
+                message: "Intern's School: ",
+                name: 'school'
+            }
+        ])
+        .then((response) => {
+            if (employeeType === 'Engineer') {
+                const engineerInfo = new Engineer(response.employeeName, response.employeeId, response.employeeEmail, response.github);
+                employees.push(engineerInfo);
+            } else if (employeeType === 'Intern') {
+                const internInfo = new Intern(response.employeeName, response.employeeId, response.employeeEmail, response.school);
+                employees.push(internInfo);
+            } else {
+                addEmployee();
+            }
+        })
 }
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
