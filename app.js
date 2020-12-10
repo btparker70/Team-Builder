@@ -59,7 +59,8 @@ function addEmployee() {
         ])
         .then((response) => {
             if (response.employeeType === 'No more employees to add') {
-                writeHTMLFile(render(employees));
+                htmlData = render(employees);
+                writeHTMLFile(htmlData);
             } else {
                 addEmployeeInfo(response.employeeType);
             }
@@ -113,7 +114,7 @@ function addEmployeeInfo(employeeType) {
 
 function writeHTMLFile(htmlData) {
     if (!fs.existsSync(OUTPUT_DIR)) {
-        fs.mkdir(OUTPUT_DIR);
+        fs.mkdir(OUTPUT_DIR, (err) => err ? console.error(err) : console.log('Folder created'));
     }
     fs.writeFile(outputPath, (htmlData), (err) => err ? console.error(err) : console.log('File created'));
 }
