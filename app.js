@@ -12,6 +12,7 @@ const render = require("./lib/htmlRenderer");
 
 let employees = [];
 
+addManager();
 // FUNCTIONALITY //
 function addManager() {
     inquirer
@@ -58,9 +59,9 @@ function addEmployee() {
         ])
         .then((response) => {
             if (response.employeeType === 'No more employees to add') {
-                render(employees);
+                writeHTMLFile(render(employees));
             } else {
-                addEmployeeInfo();
+                addEmployeeInfo(response.employeeType);
             }
         })
 }
@@ -83,11 +84,6 @@ function addEmployeeInfo(employeeType) {
                 name: 'employeeEmail'
             },
             {
-                type: 'input',
-                message: 'Manager Office Number:',
-                name: 'managerOfficeNumber'
-            },
-            {
                 when: employeeType === 'Engineer',
                 type: 'input',
                 message: "Engineer's Github: ",
@@ -101,16 +97,25 @@ function addEmployeeInfo(employeeType) {
             }
         ])
         .then((response) => {
-            if (employeeType === 'Engineer') {
-                const engineerInfo = new Engineer(response.employeeName, response.employeeId, response.employeeEmail, response.github);
-                employees.push(engineerInfo);
-            } else if (employeeType === 'Intern') {
-                const internInfo = new Intern(response.employeeName, response.employeeId, response.employeeEmail, response.school);
-                employees.push(internInfo);
-            } else {
-                addEmployee();
+            switch (employeeType) {
+                case 'Engineer':
+                    const engineerInfo = new Engineer(response.employeeName, response.employeeId, response.employeeEmail, response.github);
+                    employees.push(engineerInfo);
+                    break;
+                case 'Intern':
+                    const internInfo = new Intern(response.employeeName, response.employeeId, response.employeeEmail, response.school);
+                    employees.push(internInfo);
+                    break;
             }
+            addEmployee();
         })
+}
+
+function writeHTMLFile(htmlData) {
+    if (!fs.existsSync(OUTPUT_DIR)) {
+        fs.mkdir(OUTPUT_DIR);
+    }
+    fs.writeFile(outputPath, (htmlData), (err) => err ? console.error(err) : console.log('File created'));
 }
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
@@ -124,7 +129,6 @@ function addEmployeeInfo(employeeType) {
 // `output` folder. You can use the variable `outputPath` above target this location.
 // Hint: you may need to check if the `output` folder exists and create it if it
 // does not.
-
 // HINT: each employee type (manager, engineer, or intern) has slightly different
 // information; write your code to ask different questions via inquirer depending on
 // employee type.
