@@ -1,0 +1,11 @@
+.employee-card {
+    margin: 1rem;
+    min-width: 250px;
+    max-width: 250px;
+}
+.card-header, .team-heading {
+    background-color: brown;
+}
+.card-title, .text-center {
+    color: gold;
+}
