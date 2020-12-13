@@ -10,9 +10,9 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 const outputPathStylesheet = path.join(OUTPUT_DIR, "style.css");
 const styleSheet = fs.readFileSync(path.resolve(__dirname, "templates/style.css"), "utf8");
 
-const render = require("./lib/htmlRenderer");
-
+// Stores employees created with CLI and rendering method used below in addEmployees();
 let employees = [];
+const render = require("./lib/htmlRenderer");
 
 addManager();
 // FUNCTIONALITY //
@@ -42,12 +42,14 @@ function addManager() {
             }
         ])
         .then((response) => {
+            // Creates new manager class and adds to emplyees array, then goes on to make more employees
             const managerInfo = new Manager(response.managerName, response.managerId, response.managerEmail, response.managerOfficeNumber);
             employees.push(managerInfo);
             addEmployee();
         })
 }
 
+// This checks to see what type of employee is needed or breaks the inquirer to render the page.
 function addEmployee() {
     inquirer
         // Questions
@@ -68,8 +70,11 @@ function addEmployee() {
             }
         })
 }
+
+// Add employee info depending on engineer or intern.
 function addEmployeeInfo(employeeType) {
     inquirer
+        // Questions
         .prompt([
             {
                 type: 'input',
@@ -100,6 +105,7 @@ function addEmployeeInfo(employeeType) {
             }
         ])
         .then((response) => {
+            // Create specific class and push to employee array.
             switch (employeeType) {
                 case 'Engineer':
                     const engineerInfo = new Engineer(response.employeeName, response.employeeId, response.employeeEmail, response.github);
@@ -114,6 +120,7 @@ function addEmployeeInfo(employeeType) {
         })
 }
 
+// This creates the output folder if there isn't one. Also writes the html and css file for the team
 function writeHTMLFile(htmlData) {
     if (!fs.existsSync(OUTPUT_DIR)) {
         fs.mkdir(OUTPUT_DIR, (err) => err ? console.error(err) : console.log('Folder created'));
@@ -121,4 +128,3 @@ function writeHTMLFile(htmlData) {
     fs.writeFile(outputPath, (htmlData), (err) => err ? console.error(err) : console.log('team.html created'));
     fs.writeFile(outputPathStylesheet, (styleSheet), (err) => err ? console.error(err) : console.log('style.css created'));
 }
-
